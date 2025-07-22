@@ -12,7 +12,7 @@ const Legend: React.FC = () => {
             <span className="text-sm">AWS Exchange</span>
           </div>
           <div className="flex items-center">
-            <div className="w-4 h-4 rounded-full bg-[#4285F4] mr-2"></div>
+            <div className="w-4 h-4 rounded-full bg-[#34A853] mr-2"></div>
             <span className="text-sm">GCP Exchange</span>
           </div>
           <div className="flex items-center">

@@ -39,7 +39,7 @@ const MOCK_REGIONS: CloudRegion[] = [
   {
     id: "azure-sg",
     provider: "azure",
-    location: [103.85, 1.28],
+    location: [114.16, 22.28],
     regionCode: "southeastasia",
     serverCount: 7,
   },

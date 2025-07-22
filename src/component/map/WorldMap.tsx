@@ -9,6 +9,7 @@ import ExchangeMarker from "./ExchangeMarker";
 import LatencyConnection from "./LatencyConnection";
 import LatencyPulse from "./LatencyPulse";
 import Legend from "../ui/Legend";
+import CloudRegionMarker from "./CloudRegionMarker";
 
 const Globe: React.FC = () => {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -100,6 +101,10 @@ const MapScene: React.FC = () => {
       />
       <Globe />
 
+      {cloudRegions.map((region) => (
+        <CloudRegionMarker key={region.id} region={region} />
+      ))}
+
       <group>
         {connections}
         {pulses}
@@ -124,16 +129,15 @@ const MapScene: React.FC = () => {
         enableZoom={true}
         enablePan={true}
         enableRotate={true}
-        zoomSpeed={1.0}
-        zoom0={200}
-        panSpeed={0.8}
-        rotateSpeed={0.5}
-        minDistance={50}
-        maxDistance={1000}
-        screenSpacePanning={false}
+        zoomSpeed={0.5}
+        panSpeed={0.4}
+        rotateSpeed={0.4}
+        minDistance={80}
+        maxDistance={800}
         maxPolarAngle={Math.PI}
+        screenSpacePanning={false}
         enableDamping={true}
-        dampingFactor={0.25}
+        dampingFactor={0.1}
       />
     </>
   );
