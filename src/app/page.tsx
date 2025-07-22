@@ -18,7 +18,7 @@ const HomePage: React.FC = () => {
           <WorldMap />
         </div>
 
-        <div className="relative z-10">
+        <div className="relative  z-10">
           <ControlPanel />
           <Legend />
         </div>

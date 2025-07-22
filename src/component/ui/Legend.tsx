@@ -2,8 +2,8 @@ import React from "react";
 
 const Legend: React.FC = () => {
   return (
-    <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg p-4 z-10">
-      <h3 className="font-bold mb-2 text-gray-800 dark:text-white">Legend</h3>
+    <div className="absolute top-5 right-4 text-white  dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg p-4 z-10">
+      <h3 className="font-bold mb-2 text-gray-800 text-white">Legend</h3>
 
       <div className="space-y-2">
         <div className="flex items-center">
