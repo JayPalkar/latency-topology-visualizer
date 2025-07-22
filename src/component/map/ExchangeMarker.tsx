@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Html } from "@react-three/drei";
 import { Exchange } from "@/types";
 import { getProviderColor } from "@/utils/colorUtils";
@@ -20,6 +20,10 @@ const ExchangeMarker: React.FC<ExchangeMarkerProps> = ({
   const [hovered, setHovered] = useState(false);
   const position = latLonToVector3(exchange.location[1], exchange.location[0]);
   const color = getProviderColor(exchange.provider);
+
+  useEffect(() => {
+    document.body.style.cursor = hovered ? "pointer" : "auto";
+  }, [hovered]);
 
   return (
     <group
@@ -59,37 +63,24 @@ const ExchangeMarker: React.FC<ExchangeMarkerProps> = ({
 
       {(hovered || isSelected) && (
         <Html
+          position={[0, 14, 0]}
           center
-          distanceFactor={5}
-          style={{
-            pointerEvents: "none",
-            transform: "translate3d(-50%, -100%, 0)",
-            width: "max-content",
-            minWidth: "300px",
-            zIndex: 100,
-          }}
+          distanceFactor={100}
+          occlude
+          zIndexRange={[100, 0]}
         >
-          <div
-            className={`
-            bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl
-            border-2 border-gray-300 dark:border-gray-600
-            text-lg sm:text-xl // Larger text
-          `}
-          >
-            <h3 className="font-bold text-[20vw] text-gray-900 dark:text-white mb-2">
-              {exchange.name}
-            </h3>
-            <div className="text-base text-gray-700 dark:text-gray-300 space-y-2">
-              <p className="flex items-center text-[15vw]">
-                <span className="font-medium">Provider: </span>{" "}
-                {exchange.provider.toUpperCase()}
-              </p>
-
-              <p className="flex items-center text-[15vw]">
-                <span className="font-medium">Location: </span>{" "}
+          <div className="bg-white text-black text-sm p-4 rounded-lg shadow-lg pointer-events-none w-64 max-w-sm">
+            <div className="font-semibold">{exchange.name}</div>
+            <div className="mt-1">
+              <div>
+                <span className="font-medium">Provider:</span>{" "}
+                {exchange.provider}
+              </div>
+              <div>
+                <span className="font-medium">Location:</span>{" "}
                 {exchange.location[1].toFixed(2)}°N,{" "}
                 {exchange.location[0].toFixed(2)}°E
-              </p>
+              </div>
             </div>
           </div>
         </Html>

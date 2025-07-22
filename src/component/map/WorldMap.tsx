@@ -111,7 +111,11 @@ const MapScene: React.FC = () => {
             key={exchange.id}
             exchange={exchange}
             isSelected={exchange.id === selectedExchange}
-            onClick={() => selectExchange(exchange.id)}
+            onClick={() =>
+              selectedExchange === exchange.id
+                ? selectExchange(null)
+                : selectExchange(exchange.id)
+            }
           />
         ))}
       </group>
