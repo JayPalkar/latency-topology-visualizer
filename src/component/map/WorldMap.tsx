@@ -16,7 +16,7 @@ const Globe: React.FC = () => {
 
   useEffect(() => {
     const loader = new THREE.TextureLoader();
-    loader.load("/earth.jpg", (tex) => {
+    loader.load("/earth-night.jpg", (tex) => {
       texture.current = tex;
       if (meshRef.current) {
         (meshRef.current.material as THREE.MeshStandardMaterial).map = tex;
@@ -31,7 +31,7 @@ const Globe: React.FC = () => {
       <sphereGeometry args={[100, 64, 64]} />
       <meshStandardMaterial
         map={texture.current || undefined}
-        color="#1E3A8A"
+        color="#fff"
         roughness={0.8}
         metalness={0.5}
         depthWrite={true}

@@ -33,7 +33,6 @@ interface LatencyChartProps {
 }
 
 const LatencyChart: React.FC<LatencyChartProps> = ({ data, timeRange }) => {
-  
   const labels = data.map((item) => {
     const date = new Date(item.timestamp);
     if (timeRange === "1h") return format(date, "HH:mm");
@@ -68,7 +67,8 @@ const LatencyChart: React.FC<LatencyChartProps> = ({ data, timeRange }) => {
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => `Latency: ${context.parsed.y}ms`,
+          label: (context: any) =>
+            `Latency: ${Number(context.parsed.y).toFixed(2)}ms`,
         },
       },
     },
@@ -85,7 +85,7 @@ const LatencyChart: React.FC<LatencyChartProps> = ({ data, timeRange }) => {
           color: "rgba(0, 0, 0, 0.05)",
         },
         ticks: {
-          callback: (value: any) => `${value}ms`,
+          callback: (value: any) => `${Number(value).toFixed(2)}ms`,
         },
       },
     },

@@ -4,7 +4,6 @@
 import React, { useMemo, useRef } from "react";
 import { Line } from "@react-three/drei";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
 import { LatencyData, Exchange, CloudRegion } from "@/types";
 import { getLatencyColor } from "@/utils/colorUtils";
 import { latLonToVector3 } from "@/utils/geoUtils";
@@ -33,8 +32,7 @@ const LatencyConnection: React.FC<LatencyConnectionProps> = ({
       ...latLonToVector3(
         fromExchange.location[1],
         fromExchange.location[0],
-        globeRadius,
-        1
+        globeRadius
       )
     );
   }, [fromExchange]);
@@ -45,8 +43,7 @@ const LatencyConnection: React.FC<LatencyConnectionProps> = ({
       ...latLonToVector3(
         toRegion.location[1],
         toRegion.location[0],
-        globeRadius,
-        1
+        globeRadius
       )
     );
   }, [toRegion]);
@@ -55,16 +52,8 @@ const LatencyConnection: React.FC<LatencyConnectionProps> = ({
 
   const curvePoints = useMemo(() => {
     if (start.length() === 0 || end.length() === 0) return [];
-    return getCurvedPath(start, end, 30, 1.5, globeRadius);
+    return getCurvedPath(start, end, 30, globeRadius);
   }, [start, end]);
-
-  useFrame(({ clock }) => {
-    if (lineRef.current) {
-      const intensity = 0.6 + Math.sin(clock.getElapsedTime() * 2) * 0.3;
-      lineRef.current.material.opacity = intensity;
-      lineRef.current.material.linewidth = intensity * 0.8;
-    }
-  });
 
   if (curvePoints.length === 0) return null;
 
@@ -78,6 +67,7 @@ const LatencyConnection: React.FC<LatencyConnectionProps> = ({
       opacity={0.9}
       depthTest={true}
       depthWrite={false}
+      renderOrder={1}
     />
   );
 };

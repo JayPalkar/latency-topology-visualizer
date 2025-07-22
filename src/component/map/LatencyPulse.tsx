@@ -33,8 +33,7 @@ const LatencyPulse: React.FC<LatencyPulseProps> = ({
           ...latLonToVector3(
             fromExchange.location[1],
             fromExchange.location[0],
-            globeRadius,
-            1
+            globeRadius
           )
         )
       : new THREE.Vector3();
@@ -44,8 +43,7 @@ const LatencyPulse: React.FC<LatencyPulseProps> = ({
           ...latLonToVector3(
             toRegion.location[1],
             toRegion.location[0],
-            globeRadius,
-            1
+            globeRadius
           )
         )
       : new THREE.Vector3();
@@ -53,7 +51,7 @@ const LatencyPulse: React.FC<LatencyPulseProps> = ({
     return {
       start: startPos,
       end: endPos,
-      curvePoints: getCurvedPath(startPos, endPos, 30, 1.5, globeRadius),
+      curvePoints: getCurvedPath(startPos, endPos, 30, globeRadius),
     };
   }, [data, exchanges, regions]);
 
