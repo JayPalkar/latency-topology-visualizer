@@ -3,7 +3,7 @@ import React from "react";
 const Legend: React.FC = () => {
   return (
     <div className="absolute bottom-2 right-4 text-white  bg-gray-800/90 border-2 border-gray-700 backdrop-blur-sm rounded-xl shadow-lg p-4 z-10">
-      <h3 className="font-bold mb-2 text-gray-800 text-white">Legend</h3>
+      <h3 className="font-bold mb-2  text-white">Legend</h3>
 
       <div className="flex gap-5 space-y-2">
         <div>
