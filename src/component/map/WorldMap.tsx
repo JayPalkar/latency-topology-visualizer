@@ -48,32 +48,48 @@ const MapScene: React.FC = () => {
     selectedExchange,
     selectExchange,
     cloudRegions,
+    visibleProviders,
   } = useLatency();
+
+  const filteredRegions = useMemo(
+    () => cloudRegions.filter((r) => visibleProviders.includes(r.provider)),
+    [cloudRegions, visibleProviders]
+  );
+
+  const filteredLatency = useMemo(
+    () =>
+      latencyData.filter((data) =>
+        visibleProviders.includes(
+          cloudRegions.find((r) => r.id === data.to)?.provider || ""
+        )
+      ),
+    [latencyData, cloudRegions, visibleProviders]
+  );
 
   const connections = useMemo(
     () =>
-      latencyData.map((data, idx) => (
+      filteredLatency.map((data, idx) => (
         <LatencyConnection
           key={`conn-${idx}`}
           data={data}
           exchanges={exchanges}
-          regions={cloudRegions}
+          regions={filteredRegions}
         />
       )),
-    [latencyData, exchanges, cloudRegions]
+    [filteredLatency, exchanges, filteredRegions]
   );
 
   const pulses = useMemo(
     () =>
-      latencyData.map((data, idx) => (
+      filteredLatency.map((data, idx) => (
         <LatencyPulse
           key={`pulse-${idx}`}
           data={data}
           exchanges={exchanges}
-          regions={cloudRegions}
+          regions={filteredRegions}
         />
       )),
-    [latencyData, exchanges, cloudRegions]
+    [filteredLatency, exchanges, filteredRegions]
   );
 
   return (
@@ -101,7 +117,7 @@ const MapScene: React.FC = () => {
       />
       <Globe />
 
-      {cloudRegions.map((region) => (
+      {filteredRegions.map((region) => (
         <CloudRegionMarker key={region.id} region={region} />
       ))}
 

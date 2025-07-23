@@ -39,6 +39,8 @@ interface LatencyContextType {
     regionId: string,
     range: string
   ) => Promise<void>;
+  visibleProviders: string[];
+  toggleProviderVisibility: (provider: string) => void;
 }
 
 const LatencyContext = createContext<LatencyContextType | undefined>(undefined);
@@ -64,6 +66,11 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [timeRange, setTimeRangeState] = useState<string>("24h");
   const [latencyStats, setLatencyStats] = useState<LatencyStats | null>(null);
+  const [visibleProviders, setVisibleProviders] = useState<string[]>([
+    "aws",
+    "gcp",
+    "azure",
+  ]);
 
   const refreshData = async () => {
     setLoading(true);
@@ -127,6 +134,14 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
     return () => clearInterval(interval);
   }, []);
 
+  const toggleProviderVisibility = (provider: string) => {
+    setVisibleProviders((prev) =>
+      prev.includes(provider)
+        ? prev.filter((p) => p !== provider)
+        : [...prev, provider]
+    );
+  };
+
   return (
     <LatencyContext.Provider
       value={{
@@ -145,6 +160,8 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
         setTimeRange,
         refreshData,
         fetchHistorical,
+        visibleProviders,
+        toggleProviderVisibility,
       }}
     >
       {children}
