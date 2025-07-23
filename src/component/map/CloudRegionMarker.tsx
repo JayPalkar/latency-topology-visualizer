@@ -51,7 +51,7 @@ export default function CloudRegionMarker({
       <Html
         position={[0, 10, 0]}
         center
-        distanceFactor={90}
+        distanceFactor={100}
         occlude
         zIndexRange={[100, 0]}
       >

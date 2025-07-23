@@ -66,13 +66,18 @@ const LatencyChartSection: React.FC = () => {
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-bold">Historical Latency</h3>
+        <h3 className="text-lg text-white font-bold">Historical Latency</h3>
         <div className="text-sm text-gray-600 dark:text-gray-400">
           {selectedExchange} → {selectedRegion}
         </div>
       </div>
 
-      <LatencyChart data={historicalData} timeRange={timeRange} />
+      <LatencyChart
+        data={historicalData}
+        timeRange={timeRange}
+        exchangeId={selectedExchange}
+        regionId={selectedRegion}
+      />
     </div>
   );
 };

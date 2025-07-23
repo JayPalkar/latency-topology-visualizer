@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
 import React from "react";
@@ -76,13 +75,7 @@ const LatencyChart: React.FC<LatencyChartProps> = ({
       legend: {
         display: false,
       },
-      title: {
-        display: true,
-        text: `${exchangeId} → ${regionId}`,
-        font: {
-          size: 16,
-        },
-      },
+
       tooltip: {
         callbacks: {
           label: (context: any) => `Latency: ${context.parsed.y}ms`,

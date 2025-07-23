@@ -12,9 +12,9 @@ export const getLatencyStatus = (latency: number): string => {
 
 export const getProviderColor = (provider: "aws" | "gcp" | "azure"): string => {
   return {
-    aws: "#FF9900",
-    gcp: "#34A853",
-    azure: "#0089D6",
+    aws: "#0000ff",
+    gcp: "#f000f0",
+    azure: "#ff0000",
   }[provider];
 };
 

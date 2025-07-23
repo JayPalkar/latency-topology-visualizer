@@ -21,7 +21,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, trend }) => {
     <div className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-sm border border-gray-100 dark:border-gray-600">
       <div className="text-sm text-gray-500 dark:text-gray-400">{title}</div>
       <div className="flex items-center mt-1">
-        <div className="text-xl font-bold">{value}</div>
+        <div className="text-xl text-white font-bold">{value}</div>
         {trend !== undefined && (
           <div className={`ml-2 text-sm ${getTrendColor()}`}>
             {getTrendIcon()} {Math.abs(trend).toFixed(1)}%
