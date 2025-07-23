@@ -41,6 +41,8 @@ interface LatencyContextType {
   ) => Promise<void>;
   visibleProviders: string[];
   toggleProviderVisibility: (provider: string) => void;
+  useRealData: boolean;
+  toggleDataSource: () => void;
 }
 
 const LatencyContext = createContext<LatencyContextType | undefined>(undefined);
@@ -71,6 +73,7 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
     "gcp",
     "azure",
   ]);
+  const [useRealData, setUseRealData] = useState(false);
 
   const refreshData = async () => {
     setLoading(true);
@@ -132,7 +135,9 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
     refreshData();
     const interval = setInterval(refreshData, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [useRealData]);
+
+  const toggleDataSource = () => setUseRealData(!useRealData);
 
   const toggleProviderVisibility = (provider: string) => {
     setVisibleProviders((prev) =>
@@ -162,6 +167,8 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
         fetchHistorical,
         visibleProviders,
         toggleProviderVisibility,
+        useRealData,
+        toggleDataSource,
       }}
     >
       {children}

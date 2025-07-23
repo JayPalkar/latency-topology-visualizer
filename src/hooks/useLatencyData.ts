@@ -1,3 +1,4 @@
+import { calculateDistance } from "@/utils/geoUtils";
 import {
   Exchange,
   CloudRegion,
@@ -5,19 +6,54 @@ import {
   HistoricalLatency,
   LatencyStats,
 } from "../types";
+import {
+  fetchCloudflareLatency,
+  getRegionLatency,
+} from "@/utils/cloudflareApi";
 
 // Mock data for demonstration
 const MOCK_EXCHANGES: Exchange[] = [
-  { id: "binance", name: "Binance", location: [103.85, 1.28], provider: "aws" },
-  { id: "okx", name: "OKX", location: [114.16, 22.28], provider: "aws" },
-  { id: "deribit", name: "Deribit", location: [4.89, 52.37], provider: "gcp" },
-  { id: "bybit", name: "Bybit", location: [103.85, 1.28], provider: "azure" },
-  { id: "kraken", name: "Kraken", location: [-122.33, 47.61], provider: "gcp" },
+  {
+    id: "binance",
+    name: "Binance",
+    location: [103.85, 1.28],
+    provider: "aws",
+    countryCode: "SG",
+  },
+  {
+    id: "okx",
+    name: "OKX",
+    location: [114.16, 22.28],
+    provider: "aws",
+    countryCode: "HK",
+  },
+  {
+    id: "deribit",
+    name: "Deribit",
+    location: [4.89, 52.37],
+    provider: "gcp",
+    countryCode: "NL",
+  },
+  {
+    id: "bybit",
+    name: "Bybit",
+    location: [103.85, 1.28],
+    provider: "azure",
+    countryCode: "SG",
+  },
+  {
+    id: "kraken",
+    name: "Kraken",
+    location: [-122.33, 47.61],
+    provider: "gcp",
+    countryCode: "US",
+  },
   {
     id: "coinbase",
     name: "Coinbase",
     location: [-122.42, 37.77],
     provider: "aws",
+    countryCode: "US",
   },
 ];
 
@@ -28,6 +64,7 @@ const MOCK_REGIONS: CloudRegion[] = [
     location: [103.85, 1.28],
     regionCode: "ap-southeast-1",
     serverCount: 12,
+    countryCode: "SG",
   },
   {
     id: "gcp-nl",
@@ -35,6 +72,7 @@ const MOCK_REGIONS: CloudRegion[] = [
     location: [4.89, 52.37],
     regionCode: "europe-west4",
     serverCount: 8,
+    countryCode: "NL",
   },
   {
     id: "azure-sg",
@@ -42,6 +80,7 @@ const MOCK_REGIONS: CloudRegion[] = [
     location: [114.16, 22.28],
     regionCode: "southeastasia",
     serverCount: 7,
+    countryCode: "HK",
   },
   {
     id: "aws-usw",
@@ -49,6 +88,7 @@ const MOCK_REGIONS: CloudRegion[] = [
     location: [-122.33, 47.61],
     regionCode: "us-west-2",
     serverCount: 15,
+    countryCode: "US",
   },
   {
     id: "gcp-usw",
@@ -56,6 +96,7 @@ const MOCK_REGIONS: CloudRegion[] = [
     location: [-122.42, 37.77],
     regionCode: "us-west2",
     serverCount: 10,
+    countryCode: "US",
   },
   {
     id: "azure-eur",
@@ -63,6 +104,7 @@ const MOCK_REGIONS: CloudRegion[] = [
     location: [8.68, 50.11],
     regionCode: "germanywestcentral",
     serverCount: 9,
+    countryCode: "DE",
   },
 ];
 
@@ -71,6 +113,55 @@ export const fetchRealTimeData = async (): Promise<{
   regions: CloudRegion[];
   latency: LatencyData[];
 }> => {
+  const useRealData = process.env.NEXT_PUBLIC_USE_REAL_DATA === "true";
+
+  if (useRealData) {
+    try {
+      const cloudflareData = await fetchCloudflareLatency();
+
+      const exchanges = MOCK_EXCHANGES.map((ex) => ({
+        ...ex,
+        latency:
+          cloudflareData.find((d) => d.location === ex.countryCode)?.latency ||
+          50,
+      }));
+
+      const regions = await Promise.all(
+        MOCK_REGIONS.map(async (reg) => ({
+          ...reg,
+          latency: await getRegionLatency(reg.countryCode),
+        }))
+      );
+
+      const latency: LatencyData[] = [];
+      exchanges.forEach((from) => {
+        regions.forEach((to) => {
+          const baseLatency = Math.abs(
+            (from.latency || 50) - (to.latency || 50)
+          );
+          const distanceFactor =
+            calculateDistance(
+              from.location[1],
+              from.location[0],
+              to.location[1],
+              to.location[0]
+            ) / 10000;
+
+          latency.push({
+            from: from.id,
+            to: to.id,
+            latency: baseLatency * (0.8 + distanceFactor * 0.4),
+            timestamp: Date.now(),
+          });
+        });
+      });
+
+      return { exchanges, regions, latency };
+    } catch (error) {
+      console.error("Using mock data due to API error:", error);
+    }
+  }
+
   await new Promise((resolve) => setTimeout(resolve, 800));
 
   const latency: LatencyData[] = [];

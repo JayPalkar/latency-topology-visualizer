@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+"use client";
+
 import React from "react";
 import { Line } from "react-chartjs-2";
 import {
@@ -30,9 +33,17 @@ ChartJS.register(
 interface LatencyChartProps {
   data: HistoricalLatency[];
   timeRange: string;
+  exchangeId: string;
+  regionId: string;
 }
 
-const LatencyChart: React.FC<LatencyChartProps> = ({ data, timeRange }) => {
+const LatencyChart: React.FC<LatencyChartProps> = ({
+  data,
+  timeRange,
+  exchangeId,
+  regionId,
+}) => {
+  // Format labels based on time range
   const labels = data.map((item) => {
     const date = new Date(item.timestamp);
     if (timeRange === "1h") return format(date, "HH:mm");
@@ -65,10 +76,16 @@ const LatencyChart: React.FC<LatencyChartProps> = ({ data, timeRange }) => {
       legend: {
         display: false,
       },
+      title: {
+        display: true,
+        text: `${exchangeId} → ${regionId}`,
+        font: {
+          size: 16,
+        },
+      },
       tooltip: {
         callbacks: {
-          label: (context: any) =>
-            `Latency: ${Number(context.parsed.y).toFixed(2)}ms`,
+          label: (context: any) => `Latency: ${context.parsed.y}ms`,
         },
       },
     },
@@ -80,12 +97,13 @@ const LatencyChart: React.FC<LatencyChartProps> = ({ data, timeRange }) => {
       },
       y: {
         min: 0,
-        max: Math.max(...data.map((item) => item.latency)) + 20,
+        max: Math.max(...data.map((item) => item.latency)) * 1.2,
+        title: {
+          display: true,
+          text: "ms",
+        },
         grid: {
           color: "rgba(0, 0, 0, 0.05)",
-        },
-        ticks: {
-          callback: (value: any) => `${Number(value).toFixed(2)}ms`,
         },
       },
     },

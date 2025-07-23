@@ -6,6 +6,7 @@ export interface Exchange {
   location: [number, number]; // [long, lat]
   provider: CloudProvider;
   latency?: number;
+  countryCode: string;
 }
 
 export interface CloudRegion {
@@ -14,6 +15,7 @@ export interface CloudRegion {
   location: [number, number];
   regionCode: string;
   serverCount: number;
+  countryCode: string;
 }
 
 export interface LatencyData {
