@@ -29,7 +29,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-gray-100  dark:from-gray-900 dark:to-gray-800">
-      <main className="flex-grow flex flex-col md:flex-row relative">
+      <main className="flex-grow flex flex-col lg:flex-row relative">
         {isMobile && (
           <div className="relative  top-2 z-30 flex gap-2 max-w-full">
             <button
@@ -41,13 +41,13 @@ const HomePage: React.FC = () => {
           </div>
         )}
 
-        <div className="w-full md:w-1/2 p-4 space-y-6 overflow-y-auto relative z-10">
+        <div className="w-full lg:w-1/2 p-4 space-y-6 overflow-y-auto relative z-10">
           {(showPanel || !isMobile) && <ControlPanel />}
 
           <LatencyChartSection />
         </div>
 
-        <div className="w-full md:w-1/2 h-screen  relative z-0">
+        <div className="w-full lg:w-1/2 h-[90vh] lg:h-screen  relative z-0">
           <WorldMap />
         </div>
       </main>
@@ -56,8 +56,13 @@ const HomePage: React.FC = () => {
 };
 
 const LatencyChartSection: React.FC = () => {
-  const { historicalData, selectedExchange, selectedRegion, timeRange } =
-    useLatency();
+  const {
+    historicalData,
+    selectedExchange,
+    selectedRegion,
+    timeRange,
+    loading,
+  } = useLatency();
 
   if (!selectedExchange || !selectedRegion) {
     return;
@@ -77,6 +82,7 @@ const LatencyChartSection: React.FC = () => {
         timeRange={timeRange}
         exchangeId={selectedExchange}
         regionId={selectedRegion}
+        loading={loading}
       />
     </div>
   );

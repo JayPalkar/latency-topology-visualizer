@@ -29,7 +29,7 @@ const MapScene: React.FC = () => {
 
   useEffect(() => {
     loader.load(
-      "/earth.jpg",
+      "/earth-night.jpg",
       (tex) => setTexture(tex),
       undefined,
       (err) => {
@@ -156,7 +156,7 @@ const MapScene: React.FC = () => {
 
 const WorldMap: React.FC = () => {
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-2/3 md:h-[80%] lg:h-full">
       <Canvas
         camera={{
           position: [0, 0, 400],

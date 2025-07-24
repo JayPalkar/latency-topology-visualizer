@@ -34,15 +34,14 @@ interface LatencyChartProps {
   timeRange: string;
   exchangeId: string;
   regionId: string;
+  loading: boolean;
 }
 
 const LatencyChart: React.FC<LatencyChartProps> = ({
   data,
   timeRange,
-  exchangeId,
-  regionId,
+  loading,
 }) => {
-  // Format labels based on time range
   const labels = data.map((item) => {
     const date = new Date(item.timestamp);
     if (timeRange === "1h") return format(date, "HH:mm");
@@ -103,8 +102,16 @@ const LatencyChart: React.FC<LatencyChartProps> = ({
   };
 
   return (
-    <div className="h-64">
-      <Line data={chartData} options={options} />
+    <div className="h-64 flex items-center justify-center">
+      {loading ? (
+        <div className="flex items-center text-white justify-center h-full w-full">
+          Loading...
+        </div>
+      ) : data.length === 0 ? (
+        <p className="text-sm text-gray-500">No latency data available.</p>
+      ) : (
+        <Line data={chartData} options={options} />
+      )}
     </div>
   );
 };

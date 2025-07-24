@@ -6,10 +6,7 @@ import {
   HistoricalLatency,
   LatencyStats,
 } from "../types";
-import {
-  fetchCloudflareLatency,
-  getRegionLatency,
-} from "@/utils/cloudflareApi";
+import { fetchCloudflareLatency } from "@/utils/cloudflareApi";
 
 // Mock data for demonstration
 const MOCK_EXCHANGES: Exchange[] = [

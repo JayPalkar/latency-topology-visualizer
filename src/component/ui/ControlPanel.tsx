@@ -17,14 +17,11 @@ const ControlPanel: React.FC = () => {
     latencyStats,
     visibleProviders,
     toggleProviderVisibility,
-    useRealData,
-    toggleDataSource,
   } = useLatency();
 
   const [exchangeSearch, setExchangeSearch] = useState("");
   const [regionSearch, setRegionSearch] = useState("");
 
-  // Filter exchanges based on search
   const filteredExchanges = useMemo(() => {
     return exchanges.filter(
       (ex) =>
@@ -33,7 +30,6 @@ const ControlPanel: React.FC = () => {
     );
   }, [exchanges, exchangeSearch]);
 
-  // Filter regions based on search
   const filteredRegions = useMemo(() => {
     return cloudRegions.filter(
       (region) =>
@@ -45,9 +41,7 @@ const ControlPanel: React.FC = () => {
   return (
     <div className="w-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-xl shadow-lg px-4 py-4 flex flex-col gap-6">
       <div className="flex flex-col lg:flex-row justify-between gap-6">
-        {/* Sequential Selection Panel */}
         <div className="w-full lg:w-1/2 space-y-6">
-          {/* Exchange Selection - Hide when exchange is selected */}
           {!selectedExchange && (
             <div className="space-y-3">
               <h3 className="font-semibold text-gray-700 dark:text-gray-300">
@@ -79,7 +73,6 @@ const ControlPanel: React.FC = () => {
             </div>
           )}
 
-          {/* Region Selection - Only show after exchange is selected */}
           {selectedExchange && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -133,7 +126,6 @@ const ControlPanel: React.FC = () => {
           )}
         </div>
 
-        {/* Metrics Panel */}
         <div className="w-full lg:w-1/2 space-y-6">
           {selectedExchange && selectedRegion && latencyStats ? (
             <div className="space-y-2">
@@ -202,23 +194,6 @@ const ControlPanel: React.FC = () => {
                 {provider.toUpperCase()}
               </button>
             ))}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="flex items-center">
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={useRealData}
-                onChange={toggleDataSource}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-              <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                Real Data
-              </span>
-            </label>
           </div>
         </div>
       </div>
