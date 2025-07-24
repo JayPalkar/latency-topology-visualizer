@@ -78,7 +78,9 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
   const refreshData = async () => {
     setLoading(true);
     try {
-      const { exchanges, regions, latency } = await fetchRealTimeData();
+      const { exchanges, regions, latency } = await fetchRealTimeData(
+        useRealData
+      );
       setExchanges(exchanges);
       setCloudRegions(regions);
       setLatencyData(latency);
@@ -133,9 +135,21 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     refreshData();
-    const interval = setInterval(refreshData, 10000);
+    const interval = setInterval(refreshData, 10000); 
     return () => clearInterval(interval);
-  }, [useRealData]);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedExchange || !selectedRegion) return;
+
+    fetchHistorical(selectedExchange, selectedRegion, timeRange);
+
+    const interval = setInterval(() => {
+      fetchHistorical(selectedExchange, selectedRegion, timeRange);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [selectedExchange, selectedRegion, timeRange]);
 
   const toggleDataSource = () => setUseRealData(!useRealData);
 

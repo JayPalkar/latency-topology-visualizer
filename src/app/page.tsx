@@ -28,10 +28,10 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-gray-100  dark:from-gray-900 dark:to-gray-800">
       <main className="flex-grow flex flex-col md:flex-row relative">
         {isMobile && (
-          <div className="relative left-4 top-2 z-30 flex gap-2">
+          <div className="relative  top-2 z-30 flex gap-2 max-w-full">
             <button
               onClick={handleTogglePanel}
               className="bg-blue-600 text-white p-2 rounded-lg shadow-md"
@@ -66,7 +66,7 @@ const LatencyChartSection: React.FC = () => {
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg text-white font-bold">Historical Latency</h3>
+        <h3 className="text-lg text-white font-bold">Latency History</h3>
         <div className="text-sm text-gray-600 dark:text-gray-400">
           {selectedExchange} → {selectedRegion}
         </div>

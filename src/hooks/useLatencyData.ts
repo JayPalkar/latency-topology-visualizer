@@ -108,69 +108,56 @@ const MOCK_REGIONS: CloudRegion[] = [
   },
 ];
 
-export const fetchRealTimeData = async (): Promise<{
+export const fetchRealTimeData = async (
+  useRealData: boolean
+): Promise<{
   exchanges: Exchange[];
   regions: CloudRegion[];
   latency: LatencyData[];
 }> => {
-  const useRealData = process.env.NEXT_PUBLIC_USE_REAL_DATA === "true";
+  let baseGlobalLatency = 50;
 
   if (useRealData) {
     try {
-      const cloudflareData = await fetchCloudflareLatency();
-
-      const exchanges = MOCK_EXCHANGES.map((ex) => ({
-        ...ex,
-        latency:
-          cloudflareData.find((d) => d.location === ex.countryCode)?.latency ||
-          50,
-      }));
-
-      const regions = await Promise.all(
-        MOCK_REGIONS.map(async (reg) => ({
-          ...reg,
-          latency: await getRegionLatency(reg.countryCode),
-        }))
-      );
-
-      const latency: LatencyData[] = [];
-      exchanges.forEach((from) => {
-        regions.forEach((to) => {
-          const baseLatency = Math.abs(
-            (from.latency || 50) - (to.latency || 50)
-          );
-          const distanceFactor =
-            calculateDistance(
-              from.location[1],
-              from.location[0],
-              to.location[1],
-              to.location[0]
-            ) / 10000;
-
-          latency.push({
-            from: from.id,
-            to: to.id,
-            latency: baseLatency * (0.8 + distanceFactor * 0.4),
-            timestamp: Date.now(),
-          });
-        });
-      });
-
-      return { exchanges, regions, latency };
+      baseGlobalLatency = await fetchCloudflareLatency();
+      baseGlobalLatency *= 150;
     } catch (error) {
       console.error("Using mock data due to API error:", error);
+      useRealData = false;
     }
   }
+
+  const exchanges = MOCK_EXCHANGES.map((ex) => ({
+    ...ex,
+    latency: baseGlobalLatency * getCountryFactor(ex.countryCode),
+  }));
+
+  const regions = MOCK_REGIONS.map((reg) => ({
+    ...reg,
+    latency: baseGlobalLatency * getCountryFactor(reg.countryCode),
+  }));
 
   await new Promise((resolve) => setTimeout(resolve, 800));
 
   const latency: LatencyData[] = [];
-  MOCK_EXCHANGES.forEach((from) => {
-    MOCK_REGIONS.forEach((to) => {
+  exchanges.forEach((from) => {
+    regions.forEach((to) => {
+      const distance = calculateDistance(
+        from.location[1],
+        from.location[0],
+        to.location[1],
+        to.location[0]
+      );
+
+      const simulatedLatency = Math.max(
+        10,
+        baseGlobalLatency * (0.8 + distance / 20000) + Math.random() * 20 - 10
+      );
+
       latency.push({
         from: from.id,
         to: to.id,
-        latency: Math.random() * 80 + 20,
+        latency: simulatedLatency,
         timestamp: Date.now(),
       });
     });
@@ -191,14 +178,62 @@ export const fetchHistoricalData = async (
   historical: HistoricalLatency[];
   stats: LatencyStats;
 }> => {
-  await new Promise((resolve) => setTimeout(resolve, 600));
+  try {
+    const baseLatency = await fetchCloudflareLatency();
 
-  const now = Date.now();
+    const points =
+      range === "1h" ? 12 : range === "24h" ? 24 : range === "7d" ? 7 : 30;
+
+    const interval =
+      range === "1h" ? 300000 : range === "24h" ? 3600000 : 86400000;
+
+    const historical: HistoricalLatency[] = [];
+    let min = Infinity,
+      max = -Infinity,
+      sum = 0;
+
+    const now = Date.now();
+
+    for (let i = 0; i < points; i++) {
+      const timeVariation = Math.sin((i / points) * Math.PI) * 0.2;
+      const randomVariation = Math.random() * 0.3 - 0.15;
+      const latency = baseLatency * (1 + timeVariation + randomVariation);
+
+      min = Math.min(min, latency);
+      max = Math.max(max, latency);
+      sum += latency;
+
+      historical.push({
+        timestamp: now - (points - i - 1) * interval,
+        latency,
+      });
+    }
+
+    const current = historical[historical.length - 1].latency;
+
+    return {
+      historical,
+      stats: {
+        min: parseFloat(min.toFixed(1)),
+        max: parseFloat(max.toFixed(1)),
+        avg: parseFloat((sum / points).toFixed(1)),
+        current: parseFloat(current.toFixed(1)),
+      },
+    };
+  } catch (error) {
+    console.error("Using mock historical data due to error:", error);
+
+    return mockHistoricalData(exchangeId, regionId, range);
+  }
+};
+
+function mockHistoricalData(
+  exchangeId: string,
+  regionId: string,
+  range: string
+) {
   const points =
-    range === "1h" ? 60 : range === "24h" ? 24 : range === "7d" ? 7 : 30;
-
-  const interval =
-    range === "1h" ? 60000 : range === "24h" ? 3600000 : 86400000;
+    range === "1h" ? 12 : range === "24h" ? 24 : range === "7d" ? 7 : 30;
 
   const historical: HistoricalLatency[] = [];
   let min = Infinity,
@@ -206,13 +241,13 @@ export const fetchHistoricalData = async (
     sum = 0;
 
   for (let i = 0; i < points; i++) {
-    const latency = Math.random() * 50 + 30;
+    const latency = 50 + Math.random() * 50; // 50-100ms
     min = Math.min(min, latency);
     max = Math.max(max, latency);
     sum += latency;
 
     historical.push({
-      timestamp: now - (points - i - 1) * interval,
+      timestamp: Date.now() - (points - i - 1) * 60000,
       latency,
     });
   }
@@ -228,4 +263,15 @@ export const fetchHistoricalData = async (
       current: parseFloat(current.toFixed(1)),
     },
   };
-};
+}
+
+function getCountryFactor(countryCode: string): number {
+  const factors: Record<string, number> = {
+    SG: 0.9,
+    HK: 0.95,
+    NL: 1.0,
+    US: 1.1,
+    DE: 1.2,
+  };
+  return factors[countryCode] || 1.0;
+}

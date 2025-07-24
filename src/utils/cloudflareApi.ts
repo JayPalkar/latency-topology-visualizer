@@ -1,64 +1,24 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from "axios";
-
-interface CloudflareLatencyData {
-  location: string;
-  latency: number;
-  timestamp: string;
-}
-
-export const fetchCloudflareLatency = async (): Promise<
-  CloudflareLatencyData[]
-> => {
+export const fetchCloudflareLatency = async () => {
+  console.log("fnc called", process.env.NEXT_PUBLIC_CLOUDFLARE_API_TOKEN);
   try {
-    const response = await axios.get(
-      "https://api.cloudflare.com/client/v4/radar/http/timeseries",
-      {
-        params: {
-          format: "json",
-          dateRange: "1d",
-          metrics: "latency",
-        },
-        headers: {
-          Authorization: `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`,
-        },
-      }
-    );
-
-    console.log("Raw Cloudflare Timeseries Response:", response.data);
-
-    return response.data.result.timeseries.map((point: any) => ({
-      location: point.location,
-      latency: point.latency,
-      timestamp: point.timestamp,
-    }));
+    const res = await fetch("/api/cloudflare-latency");
+    const data = await res.json();
+    return data.latency ?? 50;
   } catch (error) {
-    console.error("Failed to fetch Cloudflare latency data:", error);
-    throw new Error("Failed to fetch Cloudflare latency data");
+    console.error("Error fetching Cloudflare latency:", error);
+    return 50;
   }
 };
 
-export const getRegionLatency = async (regionCode: string): Promise<number> => {
-  try {
-    const response = await axios.get(
-      `https://api.cloudflare.com/client/v4/radar/http/locations/${regionCode}`,
-      {
-        params: {
-          format: "json",
-          dateRange: "1h",
-          metric: "latency",
-        },
-        headers: {
-          Authorization: `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`,
-        },
-      }
-    );
+export const getRegionLatency = async (countryCode: string) => {
+  const regionFactors: Record<string, number> = {
+    SG: 0.9,
+    HK: 0.95,
+    NL: 1.0,
+    US: 1.1,
+    DE: 1.2,
+  };
 
-    console.log(`Latency data for region ${regionCode}:`, response.data);
-
-    return response.data.result.location.latency;
-  } catch (error) {
-    console.error(`Failed to fetch latency for ${regionCode}:`, error);
-    return Math.random() * 80 + 20; // Fallback to mock data
-  }
+  const baseLatency = await fetchCloudflareLatency();
+  return baseLatency * (regionFactors[countryCode] || 1.0);
 };
