@@ -1,5 +1,7 @@
+// Define the supported cloud providers used throughout the application
 export type CloudProvider = "aws" | "gcp" | "azure";
 
+// Interface representing a financial exchange node on the map
 export interface Exchange {
   id: string;
   name: string;
@@ -9,6 +11,7 @@ export interface Exchange {
   countryCode: string;
 }
 
+// Interface representing a cloud region (not an exchange) used for grouping or analysis
 export interface CloudRegion {
   id: string;
   provider: CloudProvider;
@@ -18,6 +21,7 @@ export interface CloudRegion {
   countryCode: string;
 }
 
+// Represents a single latency measurement between two endpoints
 export interface LatencyData {
   from: string;
   to: string;
@@ -25,11 +29,13 @@ export interface LatencyData {
   timestamp: number;
 }
 
+// Time series data of historical latencies for a connection
 export interface HistoricalLatency {
   timestamp: number;
   latency: number;
 }
 
+// Statistical summary of latency metrics
 export interface LatencyStats {
   min: number;
   max: number;

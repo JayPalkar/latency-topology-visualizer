@@ -13,6 +13,7 @@ import Legend from "../ui/Legend";
 import CloudRegionMarker from "./CloudRegionMarker";
 import Globe from "./Globe";
 
+// Scene component responsible for rendering 3D world with markers, pulses and connections
 const MapScene: React.FC = () => {
   const groupRef = useRef<THREE.Group>(null);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
@@ -27,6 +28,7 @@ const MapScene: React.FC = () => {
     visibleProviders,
   } = useLatency();
 
+  // Load Earth texture once on mount
   useEffect(() => {
     loader.load(
       "/earth-night.jpg",
@@ -39,23 +41,27 @@ const MapScene: React.FC = () => {
     );
   }, [loader]);
 
+  // Spring animation for globe entry effect
   const { scale, rotation } = useSpring({
     scale: texture ? [1, 1, 1] : [2.5, 2.5, 2.5],
     rotation: texture ? [0, 0, 0] : [0.5, 0.5, 0],
     config: { tension: 120, friction: 30 },
   });
 
+  // Constant slow rotation of the globe
   useFrame(() => {
     if (groupRef.current && texture) {
       groupRef.current.rotation.y += 0.001;
     }
   });
 
+  // Filter visible cloud regions based on selected providers
   const filteredRegions = useMemo(
     () => cloudRegions.filter((r) => visibleProviders.includes(r.provider)),
     [cloudRegions, visibleProviders]
   );
 
+  // Filter latency data based on visible provider regions
   const filteredLatency = useMemo(
     () =>
       latencyData.filter((data) =>
@@ -66,6 +72,7 @@ const MapScene: React.FC = () => {
     [latencyData, cloudRegions, visibleProviders]
   );
 
+  // Map latency data to connection lines between exchanges and cloud regions
   const connections = useMemo(
     () =>
       filteredLatency.map((data, idx) => (
@@ -79,6 +86,7 @@ const MapScene: React.FC = () => {
     [filteredLatency, exchanges, filteredRegions]
   );
 
+  // Map latency data to animated pulses showing data transfer
   const pulses = useMemo(
     () =>
       filteredLatency.map((data, idx) => (
@@ -92,7 +100,7 @@ const MapScene: React.FC = () => {
     [filteredLatency, exchanges, filteredRegions]
   );
 
-  if (!texture) return null;
+  if (!texture) return null; // Wait for globe texture before rendering
 
   return (
     <>
@@ -136,6 +144,7 @@ const MapScene: React.FC = () => {
         </group>
       </a.group>
 
+      {/* Camera controls for orbiting the globe */}
       <OrbitControls
         enableZoom
         enablePan
@@ -154,6 +163,7 @@ const MapScene: React.FC = () => {
   );
 };
 
+// Container component that wraps MapScene in a Three.js Canvas and includes the legend
 const WorldMap: React.FC = () => {
   return (
     <div className="w-full h-2/3 md:h-[80%] lg:h-full">

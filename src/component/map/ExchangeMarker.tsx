@@ -18,9 +18,10 @@ const ExchangeMarker: React.FC<ExchangeMarkerProps> = ({
   onClick,
 }) => {
   const [hovered, setHovered] = useState(false);
-  const position = latLonToVector3(exchange.location[1], exchange.location[0]);
+  const position = latLonToVector3(exchange.location[1], exchange.location[0]); // Convert lat/lon to 3D vector position on the globe
   const color = getProviderColor(exchange.provider);
 
+  // Change cursor to pointer on hover
   useEffect(() => {
     document.body.style.cursor = hovered ? "pointer" : "auto";
   }, [hovered]);
@@ -32,6 +33,7 @@ const ExchangeMarker: React.FC<ExchangeMarkerProps> = ({
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
+      {/* Marker stack: sphere + cylinder + cone */}
       <group position={[0, 4.5, 0]}>
         <mesh position={[0, 0.5, 0]}>
           <sphereGeometry args={[1.2, 16, 16]} />
@@ -41,7 +43,6 @@ const ExchangeMarker: React.FC<ExchangeMarkerProps> = ({
             emissiveIntensity={isSelected ? 0.8 : 0}
           />
         </mesh>
-
         <mesh position={[0, -1.5, 0]}>
           <cylinderGeometry args={[0.5, 0.3, 3, 16]} />
           <meshStandardMaterial
@@ -50,7 +51,6 @@ const ExchangeMarker: React.FC<ExchangeMarkerProps> = ({
             emissiveIntensity={isSelected ? 0.5 : 0}
           />
         </mesh>
-
         <mesh position={[0, -3.25, 0]}>
           <coneGeometry args={[0.3, 0.7, 16]} />
           <meshStandardMaterial
@@ -61,6 +61,7 @@ const ExchangeMarker: React.FC<ExchangeMarkerProps> = ({
         </mesh>
       </group>
 
+      {/* Tooltip shows on hover or when selected */}
       {(hovered || isSelected) && (
         <Html
           position={[0, 14, 0]}

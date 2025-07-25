@@ -5,6 +5,7 @@ import { useLatency } from "@/context/LatencyContext";
 import MetricCard from "./MetricCard";
 import { Exchange } from "@/types";
 
+// Control panel UI for interacting with exchange/region selection and metrics
 const ControlPanel: React.FC = () => {
   const {
     exchanges,
@@ -23,6 +24,7 @@ const ControlPanel: React.FC = () => {
   const [exchangeSearch, setExchangeSearch] = useState("");
   const [regionSearch, setRegionSearch] = useState("");
 
+  // Filter exchanges based on search input
   const filteredExchanges = useMemo(() => {
     return exchanges.filter(
       (ex) =>
@@ -31,6 +33,7 @@ const ControlPanel: React.FC = () => {
     );
   }, [exchanges, exchangeSearch]);
 
+  // Filter cloud regions based on search input
   const filteredRegions = useMemo(() => {
     return cloudRegions.filter(
       (region) =>
@@ -42,6 +45,7 @@ const ControlPanel: React.FC = () => {
   return (
     <div className="w-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-xl shadow-lg px-4 py-4 flex flex-col gap-6">
       <div className="flex flex-col lg:flex-row justify-between gap-6">
+        {/* Left Column: Exchange & Region Selector */}
         <div className="w-full lg:w-1/2 space-y-6">
           {!selectedExchange && (
             <div className="space-y-3">
@@ -127,6 +131,7 @@ const ControlPanel: React.FC = () => {
           )}
         </div>
 
+        {/* Right Column: Latency Stats */}
         <div className="w-full lg:w-1/2 space-y-6">
           {selectedExchange && selectedRegion && latencyStats ? (
             <div className="space-y-2">
@@ -155,6 +160,7 @@ const ControlPanel: React.FC = () => {
         </div>
       </div>
 
+      {/* Time Range & Provider Filters */}
       <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
         <div className="space-y-2">
           <h3 className="font-semibold text-gray-700 dark:text-gray-300">
@@ -177,6 +183,7 @@ const ControlPanel: React.FC = () => {
           </div>
         </div>
 
+        {/* Cloud provider toggle buttons */}
         <div className="space-y-2">
           <h3 className="font-semibold text-gray-700 dark:text-gray-300">
             Cloud Providers

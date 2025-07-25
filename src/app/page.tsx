@@ -8,10 +8,12 @@ import { FaBars } from "react-icons/fa6";
 import { MdOutlineClose } from "react-icons/md";
 import ControlPanel from "@/component/ui/ControlPanel";
 
+// Main landing page of the app, combining the control panel, latency chart, and 3D world map
 const HomePage: React.FC = () => {
-  const [showPanel, setShowPanel] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [showPanel, setShowPanel] = useState(false); // Controls visibility of sidebar panel on mobile
+  const [isMobile, setIsMobile] = useState(false); // Checks if the screen size is mobile
 
+  // Detect screen width changes to toggle mobile layout
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -55,6 +57,7 @@ const HomePage: React.FC = () => {
   );
 };
 
+// Chart section showing latency history between selected exchange and region
 const LatencyChartSection: React.FC = () => {
   const {
     historicalData,
@@ -64,6 +67,7 @@ const LatencyChartSection: React.FC = () => {
     loading,
   } = useLatency();
 
+  // Only show chart if both exchange and region are selected
   if (!selectedExchange || !selectedRegion) {
     return;
   }

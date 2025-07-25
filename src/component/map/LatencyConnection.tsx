@@ -15,6 +15,7 @@ interface LatencyConnectionProps {
   regions: CloudRegion[];
 }
 
+// Renders a curved line between an exchange and a cloud region, colored by latency
 const LatencyConnection: React.FC<LatencyConnectionProps> = ({
   data,
   exchanges,
@@ -23,9 +24,11 @@ const LatencyConnection: React.FC<LatencyConnectionProps> = ({
   const lineRef = useRef<any>(null);
   const globeRadius = 100;
 
+  // Get exchange and region objects based on the latency data
   const fromExchange = exchanges.find((ex) => ex.id === data.from);
   const toRegion = regions.find((reg) => reg.id === data.to);
 
+  // Convert exchange location to 3D coordinates on the globe
   const start = useMemo(() => {
     if (!fromExchange) return new THREE.Vector3();
     return new THREE.Vector3(
@@ -37,6 +40,7 @@ const LatencyConnection: React.FC<LatencyConnectionProps> = ({
     );
   }, [fromExchange]);
 
+  // Convert region location to 3D coordinates on the globe
   const end = useMemo(() => {
     if (!toRegion) return new THREE.Vector3();
     return new THREE.Vector3(
@@ -48,13 +52,16 @@ const LatencyConnection: React.FC<LatencyConnectionProps> = ({
     );
   }, [toRegion]);
 
+  // Determine the line color based on latency value
   const color = getLatencyColor(data.latency);
 
+  // Generate smooth arc curve between source and target points
   const curvePoints = useMemo(() => {
     if (start.length() === 0 || end.length() === 0) return [];
     return getCurvedPath(start, end, 30, globeRadius);
   }, [start, end]);
 
+  // Don't render if path couldn't be created
   if (curvePoints.length === 0) return null;
 
   return (

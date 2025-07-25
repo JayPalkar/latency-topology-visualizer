@@ -10,6 +10,7 @@ interface CloudRegionMarkerProps {
   globeRadius?: number;
 }
 
+// Colors for different cloud providers
 const COLORS: Record<string, string> = {
   aws: "#ff9900",
   gcp: "#4285F4",
@@ -22,10 +23,12 @@ export default function CloudRegionMarker({
 }: CloudRegionMarkerProps) {
   const meshRef = useRef<THREE.Mesh>(null);
 
+  // Convert longitude/latitude to spherical coordinates on the globe
   const [lng, lat] = region.location;
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lng + 180) * (Math.PI / 180);
 
+  // Calculate 3D position slightly above globe surface
   const r = globeRadius + 0.5;
   const x = -r * Math.sin(phi) * Math.cos(theta);
   const y = r * Math.cos(phi);
@@ -33,7 +36,7 @@ export default function CloudRegionMarker({
 
   const position = new THREE.Vector3(x, y, z);
   const normal = position.clone().normalize();
-  const quaternion = new THREE.Quaternion();
+  const quaternion = new THREE.Quaternion(); // Align the marker's orientation to match the globe surface
   quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
 
   return (

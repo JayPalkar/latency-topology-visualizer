@@ -20,10 +20,11 @@ const LatencyPulse: React.FC<LatencyPulseProps> = ({
   regions,
 }) => {
   const pulseRef = useRef<THREE.Mesh>(null);
-  const pointsRef = useRef<THREE.Vector3[]>([]);
+  const pointsRef = useRef<THREE.Vector3[]>([]); // Stores previous pulse positions
   const color = getLatencyColor(data.latency);
   const globeRadius = 100;
 
+  // Calculate curve path between exchange and cloud region
   const { curvePoints } = useMemo(() => {
     const fromExchange = exchanges.find((e) => e.id === data.from);
     const toRegion = regions.find((r) => r.id === data.to);
@@ -55,6 +56,7 @@ const LatencyPulse: React.FC<LatencyPulseProps> = ({
     };
   }, [data, exchanges, regions]);
 
+  // Animate the pulse along the curve
   useFrame(({ clock }) => {
     if (!pulseRef.current || curvePoints.length === 0) return;
 
@@ -66,6 +68,7 @@ const LatencyPulse: React.FC<LatencyPulseProps> = ({
     );
     const segmentProgress = (t * (curvePoints.length - 1)) % 1;
 
+    // Interpolate position between two points on the curve
     const currentPos = curvePoints[segmentIndex]
       .clone()
       .lerp(curvePoints[segmentIndex + 1], segmentProgress);
@@ -75,6 +78,7 @@ const LatencyPulse: React.FC<LatencyPulseProps> = ({
     const pulseScale = 1.2 + Math.sin(clock.getElapsedTime() * 8) * 0.4;
     pulseRef.current.scale.set(pulseScale, pulseScale, pulseScale);
 
+    // Store trailing points for possible use (e.g., motion blur or path)
     if (clock.elapsedTime % 0.1 < 0.05) {
       pointsRef.current = [currentPos, ...pointsRef.current].slice(0, 8);
     }

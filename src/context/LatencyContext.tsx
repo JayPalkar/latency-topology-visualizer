@@ -19,6 +19,7 @@ import {
   fetchHistoricalData,
 } from "../hooks/useLatencyData";
 
+// Define the context shape for type safety and IntelliSense support
 interface LatencyContextType {
   exchanges: Exchange[];
   cloudRegions: CloudRegion[];
@@ -45,8 +46,10 @@ interface LatencyContextType {
   toggleDataSource: () => void;
 }
 
+// Create the context
 const LatencyContext = createContext<LatencyContextType | undefined>(undefined);
 
+// Custom hook to access the context easily
 export const useLatency = () => {
   const context = useContext(LatencyContext);
   if (!context) {
@@ -55,9 +58,11 @@ export const useLatency = () => {
   return context;
 };
 
+// Context provider to wrap around your app
 export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  // Global state definitions
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const [cloudRegions, setCloudRegions] = useState<CloudRegion[]>([]);
   const [latencyData, setLatencyData] = useState<LatencyData[]>([]);
@@ -75,6 +80,7 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
   ]);
   const [useRealData, setUseRealData] = useState(false);
 
+  // Fetch latest exchange/region/latency data
   const refreshData = async () => {
     setLoading(true);
     try {
@@ -93,6 +99,7 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  // Fetch historical latency data for a given exchange/region/time range
   const fetchHistorical = async (
     exchangeId: string,
     regionId: string,
@@ -112,6 +119,7 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  // Update selected exchange and trigger historical data fetch if region is selected
   const selectExchange = (id: string | null) => {
     setSelectedExchange(id);
     if (id && selectedRegion) {
@@ -119,6 +127,7 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  // Update selected region and trigger historical data fetch if exchange is selected
   const selectRegion = (id: string | null) => {
     setSelectedRegion(id);
     if (selectedExchange && id) {
@@ -126,6 +135,7 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  // Set time range and refetch historical data
   const setTimeRange = (range: string) => {
     setTimeRangeState(range);
     if (selectedExchange && selectedRegion) {
@@ -133,9 +143,10 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  // Fetch real-time data initially and every 10s
   useEffect(() => {
     refreshData();
-    const interval = setInterval(refreshData, 10000); 
+    const interval = setInterval(refreshData, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -153,6 +164,7 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
 
   const toggleDataSource = () => setUseRealData(!useRealData);
 
+  // Show/hide cloud provider regions
   const toggleProviderVisibility = (provider: string) => {
     setVisibleProviders((prev) =>
       prev.includes(provider)
@@ -161,6 +173,7 @@ export const LatencyProvider: React.FC<{ children: ReactNode }> = ({
     );
   };
 
+  // Provide all state and handlers to children
   return (
     <LatencyContext.Provider
       value={{

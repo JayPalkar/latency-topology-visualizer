@@ -18,6 +18,7 @@ import { format } from "date-fns";
 import { HistoricalLatency } from "@/types";
 import { getLatencyColor } from "@/utils/colorUtils";
 
+// Register chart.js modules required for line chart rendering
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -42,6 +43,7 @@ const LatencyChart: React.FC<LatencyChartProps> = ({
   timeRange,
   loading,
 }) => {
+  // Format timestamps based on selected time range (1h, 24h, 7d, etc.)
   const labels = data.map((item) => {
     const date = new Date(item.timestamp);
     if (timeRange === "1h") return format(date, "HH:mm");
@@ -55,9 +57,9 @@ const LatencyChart: React.FC<LatencyChartProps> = ({
       {
         label: "Latency (ms)",
         data: data.map((item) => item.latency),
-        borderColor: "#3b82f6",
-        backgroundColor: "rgba(59, 130, 246, 0.1)",
-        pointBackgroundColor: data.map((item) => getLatencyColor(item.latency)),
+        borderColor: "#3b82f6", // Line color
+        backgroundColor: "rgba(59, 130, 246, 0.1)", // Fill under the curve
+        pointBackgroundColor: data.map((item) => getLatencyColor(item.latency)), // Color-coded points
         pointBorderColor: "#fff",
         pointHoverRadius: 6,
         pointRadius: 4,
@@ -67,6 +69,7 @@ const LatencyChart: React.FC<LatencyChartProps> = ({
     ],
   };
 
+  // Chart configuration options
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -89,7 +92,7 @@ const LatencyChart: React.FC<LatencyChartProps> = ({
       },
       y: {
         min: 0,
-        max: Math.max(...data.map((item) => item.latency)) * 1.2,
+        max: Math.max(...data.map((item) => item.latency)) * 1.2, // Dynamic Y-axis upper limit
         title: {
           display: true,
           text: "ms",
@@ -100,7 +103,7 @@ const LatencyChart: React.FC<LatencyChartProps> = ({
       },
     },
   };
-
+  // Render chart or fallback UI based on loading and data availability
   return (
     <div className="h-64 flex items-center justify-center">
       {loading ? (

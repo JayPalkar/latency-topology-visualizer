@@ -140,12 +140,13 @@ export const fetchRealTimeData = async (
   exchanges.forEach((from) => {
     regions.forEach((to) => {
       const distance = calculateDistance(
-        from.location[1],
-        from.location[0],
+        from.location[1], // lat
+        from.location[0], // lon
         to.location[1],
         to.location[0]
       );
 
+      // Simulate latency based on base latency, distance, and noise
       const simulatedLatency = Math.max(
         10,
         baseGlobalLatency * (0.8 + distance / 20000) + Math.random() * 20 - 10
@@ -261,6 +262,8 @@ function mockHistoricalData(
     },
   };
 }
+
+// Country → Latency Factor Map
 
 function getCountryFactor(countryCode: string): number {
   const factors: Record<string, number> = {
