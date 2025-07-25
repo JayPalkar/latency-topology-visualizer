@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { useLatency } from "@/context/LatencyContext";
 import MetricCard from "./MetricCard";
+import { Exchange } from "@/types";
 
 const ControlPanel: React.FC = () => {
   const {
@@ -56,7 +57,7 @@ const ControlPanel: React.FC = () => {
               />
 
               <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-                {filteredExchanges.map((exchange) => (
+                {filteredExchanges.map((exchange: Exchange) => (
                   <div
                     key={exchange.id}
                     className="inline-flex items-center gap-2 px-3 py-2 rounded-full cursor-pointer transition-all text-sm bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
