@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Latency Topology Visualizer
+This project is a 3D interactive globe-based visualization tool built with Next.js and Three.js, displaying real-time and historical internet latency between exchange servers and major cloud provider regions (AWS, Azure, GCP).
 
-## Getting Started
+---
 
-First, run the development server:
+## Getting Started (Run Locally)
+Follow these steps to run the project on your local machine:
 
+### 1. Clone the Repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/JayPalkar/latency-topology-visualizer.git
+cd latency-topology-visualizer
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Set Environment Variables
+Create a .env.local file in the root and add the following:
+```bash
+# Replace with your actual API keys or tokens if required
+NEXT_PUBLIC_CLOUDFLARE_API_TOKEN=your_cloudflare_api-token
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Start the Development Server
+```bash
+npm run dev
+```
+Open http://localhost:3000 in your browser to view the application.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Dependencies & Libraries Used
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Library                         | Purpose                                                       |
+| ------------------------------- | ------------------------------------------------------------- |
+| `next` + `react` + `typescript` | Core web app stack                                            |
+| `three`                         | WebGL rendering and 3D scene                                  |
+| `@react-three/fiber`            | React bindings for Three.js                                   |
+| `@react-three/drei`             | Useful helpers for Three.js (e.g., OrbitControls, Environment)|
+| `react-spring`                  | Animations for globe pulses                                   |
+| `context API`                   | State management (context used here)                          |
+| `axios`                         | Data fetching from RIPE Atlas                                 |
+| `chartjs`                       | Chart rendering if using `LatencyChart`                       |
+| `tailwindcss`                   | Styling and layout                                            |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Assumptions Made
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Latency Source: Real-time and historical latency data is fetched using the Cloudflare radar api
+- Geographic Coordinates: Exchange and cloud region locations are hardcoded or fetched from static data.
+- Performance: Data polling is limited and debounced to prevent unnecessary renders or API overuse.
+- Cloud Regions: Cloud provider regions (AWS, GCP, Azure) are mapped based on public region codes and coordinates.
+- Browser Support: Best viewed on modern desktop browsers (Chrome, Firefox, Edge). Mobile view is functional but optimized for desktop.
